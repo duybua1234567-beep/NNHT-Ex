@@ -38,8 +38,8 @@ class App(tk.Tk):
         nb.pack(fill="both", expand=True, padx=6, pady=6)
         for build, name in ((self._tab_grammar, "1. Văn phạm → NFA"), (self._tab_sim, "2. Mô phỏng chuỗi"),
                             (self._tab_compare, "3. Đối chứng L(G)=L(M)"), (self._tab_dfa, "4. DFA & FA → Grammar"),
-                            (self._tab_ops, "5. Phép toán"), (self._tab_analysis, "6. Phân tích"),
-                            (self._tab_theory, "7. Không chính quy & PDA"), (self._tab_checks, "8. Kiểm tra chéo")):
+                            (self._tab_analysis, "6. Phân tích"),
+                            (self._tab_checks, "8. Kiểm tra chéo")):
             frame = ttk.Frame(nb, padding=8)
             nb.add(frame, text=name)
             build(frame)
@@ -248,24 +248,7 @@ class App(tk.Tk):
             self._set(self.out4, L.grammar_texts(self.ws.nfa))
 
     # ------------------------------------------------------------ tab 5
-    def _tab_ops(self, f):
-        self._banner(f, "Áp dụng: Chap4 Định lý 3 (hợp, nối, Kleene), 4 (bù: DFA đầy đủ), 5 (giao: tích trạng thái), Chap6 Định lý 6.5 (chạy song song)")
-        top = ttk.Frame(f)
-        top.pack(fill="x")
-        ttk.Label(top, text="L1 = văn phạm hiện tại (tab 1). L2 =").pack(side="left")
-        self.second_combo = ttk.Combobox(top, values=self.regular_titles, state="readonly", width=40)
-        self.second_combo.current(1)
-        self.second_combo.pack(side="left", padx=6)
-        bar = ttk.Frame(f)
-        bar.pack(fill="x", pady=4)
-        for name, label in (("union", "L1 ∪ L2"), ("concat", "L1 · L2"), ("star", "L1*"), ("complement", "bù L1"),
-                            ("intersection", "L1 ∩ L2")):
-            ttk.Button(bar, text=label, command=self._guard(lambda n=name: self.on_op(n))).pack(side="left", padx=3)
-        self.view5 = AutomatonView(f, height=300)
-        self.view5.pack(fill="both", expand=True, pady=6)
-        self.out5 = self._text(f, height=11)
-        self.out5.pack(fill="x")
-
+   
     # ------------------------------------------------------------ tab 6
     def _tab_analysis(self, f):
         self._banner(f, "Áp dụng: Chap4 Định lý 6 (rỗng/vô hạn), Định lý 7 (tương đương), Bổ đề Bơm (thử trên DFA); Chap1 (đồ thị: đường đi, chu trình)")
@@ -300,31 +283,7 @@ class App(tk.Tk):
             self._set(self.out6, L.pumping_text(self.ws.nfa))
 
     # ------------------------------------------------------------ tab 7
-    def _tab_theory(self, f):
-        self._banner(f, "Áp dụng: Chap4 Bổ đề Bơm (bài tập 4, 5), Chap6 (PDA: Thí dụ 6.1, 6.3), Chap2 (L3 ⊂ L2)")
-        a = ttk.Frame(f)
-        a.pack(fill="x")
-        ttk.Label(a, text="Ngôn ngữ:").pack(side="left")
-        self.lang_combo = ttk.Combobox(a, values=[x.title for x in LANGS], state="readonly", width=62)
-        self.lang_combo.current(0)
-        self.lang_combo.pack(side="left", padx=6)
-        ttk.Label(a, text="p tối đa:").pack(side="left")
-        self.p_var = tk.IntVar(value=5)
-        ttk.Spinbox(a, from_=1, to=8, textvariable=self.p_var, width=4).pack(side="left", padx=4)
-        ttk.Button(a, text="Chứng minh bằng Bổ đề Bơm", command=self._guard(self.on_nonregular)).pack(side="left", padx=6)
-        b = ttk.Frame(f)
-        b.pack(fill="x", pady=6)
-        ttk.Label(b, text="PDA:").pack(side="left")
-        self.pda_combo = ttk.Combobox(b, values=list(PDA_SAMPLES), state="readonly", width=8)
-        self.pda_combo.current(0)
-        self.pda_combo.pack(side="left", padx=6)
-        ttk.Label(b, text="Chuỗi:").pack(side="left")
-        self.pda_var = tk.StringVar(value="001c100")
-        ttk.Entry(b, textvariable=self.pda_var, width=24).pack(side="left", padx=6)
-        ttk.Button(b, text="Chạy PDA", command=self._guard(self.on_pda)).pack(side="left")
-        ttk.Label(b, text="  (wcwR: 001c100 | wwR: 001100 | anbn: aaabbb)").pack(side="left")
-        self.out7 = self._text(f, height=26)
-        self.out7.pack(fill="both", expand=True)
+    
     # ------------------------------------------------------------ tab 8
     def _tab_checks(self, f):
         self._banner(f, "Áp dụng: toàn bộ chương. Kiểm tra chéo A..L (xem cross_checks.py): văn phạm vs NFA vs DFA, phép toán, tương đương, bơm, PDA")
