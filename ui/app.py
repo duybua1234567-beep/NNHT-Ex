@@ -266,18 +266,6 @@ class App(tk.Tk):
         self.out5 = self._text(f, height=11)
         self.out5.pack(fill="x")
 
-    def on_op(self, name):
-        if not self._need_nfa():
-            return
-        n2 = None
-        alpha = set(self.ws.grammar.terminals)
-        if name in ("union", "concat", "intersection", "complement"):
-            _, g2, n2 = self._second_nfa()
-            alpha |= g2.terminals
-        aut, text = L.apply_operation(name, self.ws.nfa, n2, alpha, k=5)
-        self.view5.show(aut, caption="Kết quả phép toán")
-        self._set(self.out5, text)
-
     # ------------------------------------------------------------ tab 6
     def _tab_analysis(self, f):
         self._banner(f, "Áp dụng: Chap4 Định lý 6 (rỗng/vô hạn), Định lý 7 (tương đương), Bổ đề Bơm (thử trên DFA); Chap1 (đồ thị: đường đi, chu trình)")
@@ -337,13 +325,6 @@ class App(tk.Tk):
         ttk.Label(b, text="  (wcwR: 001c100 | wwR: 001100 | anbn: aaabbb)").pack(side="left")
         self.out7 = self._text(f, height=26)
         self.out7.pack(fill="both", expand=True)
-
-    def on_nonregular(self):
-        self._set(self.out7, L.nonregular_text(max(self.lang_combo.current(), 0), int(self.p_var.get())))
-
-    def on_pda(self):
-        self._set(self.out7, L.pda_text(self.pda_combo.get() or "wcwR", self.pda_var.get()))
-
     # ------------------------------------------------------------ tab 8
     def _tab_checks(self, f):
         self._banner(f, "Áp dụng: toàn bộ chương. Kiểm tra chéo A..L (xem cross_checks.py): văn phạm vs NFA vs DFA, phép toán, tương đương, bơm, PDA")

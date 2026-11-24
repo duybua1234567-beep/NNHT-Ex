@@ -103,22 +103,6 @@ def compare_rows(ws: Workspace, k: int):
 
 
 # ------------------------------------------------------------ phép toán
-def apply_operation(name: str, n1: Automaton, n2: Automaton | None, alphabet: set, k: int = 5):
-    """[Chap4 Định lý 3, 4, 5] Trả về (automaton kết quả, văn bản mô tả)."""
-    if name in ("union", "concat", "intersection") and n2 is None:
-        raise ValueError("Phép toán này cần ví dụ thứ hai")
-    ops = {"union": ("Hợp L1 ∪ L2", lambda: union(n1, n2)), "concat": ("Nối L1·L2", lambda: concat(n1, n2)),
-           "star": ("Kleene L1*", lambda: star(n1)), "complement": ("Bù của L1 (trên Σ*)", lambda: complement(n1, alphabet)),
-           "intersection": ("Giao L1 ∩ L2", lambda: intersection(n1, n2))}
-    title, build = ops[name]
-    aut = build()
-    words = [w or EPS for w in sigma_star(alphabet, k) if accepts(aut, w)]
-    text = [f"{title}: {len(aut.states)} trạng thái" + (" (có ε-chuyển)" if aut.has_epsilon() else ""),
-            f"Các chuỗi được chấp nhận (độ dài ≤ {k}, {len(words)} chuỗi):", "  " + ", ".join(words[:60])
-            + (" ..." if len(words) > 60 else ""), "", aut.to_table()]
-    return aut, "\n".join(text)
-
-
 # ------------------------------------------------------------ phân tích
 def analysis_text(n1: Automaton, label1: str, n2: Automaton | None = None, label2: str = "") -> str:
     out = [f"Ngôn ngữ L1 = {label1}",
@@ -141,32 +125,6 @@ def pumping_text(n1: Automaton, max_i: int = 4) -> str:
         return head + "\n" + note
     body = "\n".join(format_pump(r) for r in reports)
     return f"{head}\n{body}\n=> {sum(r['ok'] for r in reports)}/{len(reports)} chuỗi bơm thành công"
-
-
-def nonregular_text(index: int, p_max: int) -> str:
-    lang = LANGS[index]
-    ok, log = prove(lang, range(1, p_max + 1))
-    verdict = ("Mọi cách chia đều bị bác bỏ => L KHÔNG chính quy" if ok else
-               "Có cách chia không bị bác bỏ => không dùng được chuỗi này để chứng minh (L thực tế chính quy)")
-    return "\n".join([lang.title, f"Ý tưởng: {lang.note}", "5 bước [Chap4]: giả sử L chính quy; chọn w; xét mọi cách "
-                      "chia xyz; chọn i; mâu thuẫn.", *log, "=> " + verdict])
-
-
-def pda_text(name: str, w: str) -> str:
-    make, pred = PDA_SAMPLES[name]
-    pda = make()
-    w = w.strip()
-    bad = sorted({c for c in w if c not in pda.input_alphabet})
-    if bad:
-        return f"Chuỗi chứa ký hiệu ngoài Σ={sorted(pda.input_alphabet)}: {bad}"
-    ok, ids = pda_accepts(pda, w)
-    kind = "đơn định (DPDA)" if is_deterministic(pda) else "KHÔNG đơn định (NPDA)"
-    out = [f"PDA {name}: {kind}  [Chap6]", f"Chuỗi {w or EPS!r}: " + ("CHẤP NHẬN bằng Stack rỗng" if ok else "TỪ CHỐI")]
-    if ids:
-        out += ["Dãy hình thái (q, phần input còn lại, Stack - đỉnh bên trái):", format_ids(ids)]
-    out.append(f"(Đáp án theo định nghĩa ngôn ngữ: {'thuộc' if pred(w) else 'không thuộc'} L)")
-    return "\n".join(out)
-
 
 def checks_text(k: int) -> str:
     buf = io.StringIO()
